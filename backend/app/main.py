@@ -1,23 +1,12 @@
-<<<<<<< HEAD
-from fastapi import FastAPI
-
-app = FastAPI(title="CiviGuide-AI")
-
-@app.get("/api/health")
-def health():
-    return {"status": "ok"}
-=======
 from fastapi import FastAPI
 import os
 import psycopg
 import redis
 
-app = FastAPI()
-
+app = FastAPI(title="CiviGuide-AI")
 
 @app.get("/api/health")
 def health():
-
     db = "down"
     cache = "down"
 
@@ -35,9 +24,4 @@ def health():
     except Exception:
         pass
 
-    return {
-        "status": "ok",
-        "postgres": db,
-        "redis": cache
-    }
->>>>>>> origin/Moh_dev
+    return {"status": "ok", "postgres": db, "redis": cache}
