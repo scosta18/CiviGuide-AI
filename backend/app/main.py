@@ -3,31 +3,37 @@ import os
 import psycopg
 import redis
 
+
+from pydantic import BaseModel
+
+from app.kb import crawl_and_index, search_knowledge
+
+
 app = FastAPI()
+
+
+class CrawlRequest(BaseModel):
+    url: str
+
+
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 5
 
 
 @app.get("/api/health")
 def health():
+    return {"status": "ok"}
 
-    db = "down"
-    cache = "down"
 
-    try:
-        conn = psycopg.connect(os.getenv("DATABASE_URL"))
-        conn.close()
-        db = "up"
-    except Exception:
-        pass
+@app.post("/api/kb/crawl")
+def crawl_page(request: CrawlRequest):
+    return crawl_and_index(request.url)
 
-    try:
-        r = redis.from_url(os.getenv("REDIS_URL"))
-        r.ping()
-        cache = "up"
-    except Exception:
-        pass
 
+@app.post("/api/kb/search")
+def search_kb(request: SearchRequest):
     return {
-        "status": "ok",
-        "postgres": db,
-        "redis": cache
+        "query": request.query,
+        "results": search_knowledge(request.query, request.limit),
     }
