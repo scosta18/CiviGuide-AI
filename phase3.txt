@@ -1,0 +1,107 @@
+In **Phase 3**, you built the app’s **Knowledge Base**.
+
+You made your backend able to:
+
+1. **Create database tables**
+
+   You created:
+
+   ```text
+   knowledge
+   crawler_logs
+   ```
+
+   `knowledge` stores page chunks and embeddings.
+   `crawler_logs` tracks which pages were crawled and whether they changed.
+
+2. **Use pgvector**
+
+   You enabled PostgreSQL to store AI vectors using:
+
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS vector;
+   ```
+
+   This lets your app do similarity search.
+
+3. **Fetch official Maryland SNAP pages**
+
+   Your crawler downloads pages from official allow-listed domains only, like:
+
+   ```text
+   dhs.maryland.gov
+   benefits.maryland.gov
+   ```
+
+   It rejects random/untrusted domains.
+
+4. **Extract page text**
+
+   The crawler removes unnecessary HTML like scripts, styles, headers, and footers, then keeps the useful page text.
+
+5. **Chunk the text**
+
+   Long web pages are split into smaller pieces called **chunks**.
+
+   Example:
+
+   ```text
+   Full SNAP page → chunk 1, chunk 2, chunk 3...
+   ```
+
+6. **Create embeddings**
+
+   Each chunk is converted into a vector using the embedding model:
+
+   ```text
+   all-MiniLM-L6-v2
+   ```
+
+   A vector is a numerical representation of meaning.
+
+7. **Store chunks and vectors in Postgres**
+
+   Each chunk is saved in the `knowledge` table with:
+
+   ```text
+   source_url
+   source_title
+   chunk_text
+   embedding
+   content_hash
+   ```
+
+8. **Add change detection**
+
+   The crawler hashes the page content.
+
+   If the page did not change, it skips re-indexing:
+
+   ```text
+   status: skipped
+   reason: content unchanged
+   ```
+
+   This avoids wasting time and resources.
+
+9. **Seed official SNAP pages**
+
+   You ran:
+
+   ```bash
+   docker compose exec backend python -m app.seed_kb
+   ```
+
+   It indexed 4 official pages and created **30 chunks**.
+
+10. **Prepare vector search**
+
+Now your `/api/kb/search` endpoint can take a user question like:
+
+```text
+How do I apply for SNAP in Maryland?
+```
+
+and return the most relevant official chunks from the database.
+
+In simple words: **you taught your backend how to collect official SNAP information, break it into searchable pieces, store it with AI embeddings, and retrieve the most relevant information later.**
