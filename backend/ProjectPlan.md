@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CiviGuide-AI — Project Plan
 
 ## Project Description
