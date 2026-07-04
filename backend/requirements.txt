@@ -4,3 +4,8 @@ pydantic>=2.7
 pydantic-settings>=2.3
 psycopg[binary]
 redis
+
+beautifulsoup4
+httpx
+sentence-transformers
+numpy

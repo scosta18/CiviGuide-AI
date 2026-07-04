@@ -11,23 +11,24 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 -- The knowledge base: chunks of official-source text with their embeddings.
 CREATE TABLE IF NOT EXISTS knowledge (
-    id          BIGSERIAL PRIMARY KEY,
-    url         TEXT NOT NULL,          -- official page this chunk came from
-    title       TEXT,                   -- human-readable page title
-    program     TEXT DEFAULT 'MD_SNAP', -- which benefit program (MVP: one)
-    source_hash TEXT,                   -- sha256 of the page, for change detection
-    content     TEXT NOT NULL,          -- the chunk text itself
-    embedding   VECTOR(1536),           -- must match EMBEDDING_DIM in config
-    last_seen   TIMESTAMPTZ DEFAULT now()
+    id            BIGSERIAL PRIMARY KEY,
+    source_url    TEXT NOT NULL,
+    source_title  TEXT,
+    chunk_index   INT NOT NULL,
+    chunk_text    TEXT NOT NULL,
+    embedding     VECTOR(384),
+    content_hash  TEXT NOT NULL,
+    created_at    TIMESTAMPTZ DEFAULT now(),
+    UNIQUE (source_url, chunk_index)
 );
 
--- Audit log of crawler runs: proves data freshness, feeds an admin view later.
 CREATE TABLE IF NOT EXISTS crawler_logs (
-    id      BIGSERIAL PRIMARY KEY,
-    url     TEXT NOT NULL,
-    status  TEXT NOT NULL,              -- 'ok' | 'changed' | 'error' | 'skipped'
-    detail  TEXT,
-    ran_at  TIMESTAMPTZ DEFAULT now()
+    id              BIGSERIAL PRIMARY KEY,
+    source_url      TEXT UNIQUE NOT NULL,
+    content_hash    TEXT NOT NULL,
+    last_crawled_at TIMESTAMPTZ DEFAULT now(),
+    status          TEXT NOT NULL,
+    message         TEXT
 );
 """
 

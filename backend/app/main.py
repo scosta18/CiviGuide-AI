@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 import os
 import psycopg
-import redis
+import redis 
+from app.db.database import init_schema
 
 app = FastAPI(title="CiviGuide-AI")
 
@@ -25,3 +26,7 @@ def health():
         pass
 
     return {"status": "ok", "postgres": db, "redis": cache}
+
+@app.on_event("startup")
+def startup():
+    init_schema()
