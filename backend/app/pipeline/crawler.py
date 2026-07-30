@@ -113,7 +113,7 @@ def crawl_and_index(url: str):
 
     if already_crawled_unchanged(url, content_hash):
         return{
-            "status": "skipepd",
+            "status": "skiped",
             "reason": "content unchanged",
             "url": url,
         }
