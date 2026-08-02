@@ -1,7 +1,7 @@
 from typing import TypedDict
 from app.agents.retrieval_agent import retrieve
-from app.agents.retrieval_agent import eligibility
-from langgraph import StateGraph, START, END
+from app.agents.eligibility_agent import eligibility
+from langgraph.graph import StateGraph, START, END
 
 class GraphState(TypedDict):
     question: str
@@ -24,7 +24,7 @@ def build_graph():
     graph.add_edge(START, "retrieve")
     graph.add_edge("retrieve", "reason")
     graph.add_edge("reason", END)
-    return graph
+    return graph.compile()
 
 _compiled_graph = None
 

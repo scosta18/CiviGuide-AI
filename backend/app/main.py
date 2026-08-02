@@ -3,9 +3,10 @@ import os
 import psycopg
 import redis 
 from app.db.database import init_schema
+from app.api.routes import router
 
 app = FastAPI(title="CiviGuide-AI")
-
+app.include_router(router)
 @app.get("/api/health")
 def health():
     db = "down"
